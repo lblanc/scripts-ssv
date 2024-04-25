@@ -9,12 +9,10 @@
 ## Author  : Luc BLANC
 ## Company : DataCore
 ##
-## version : 2.0
-## date    : 2020/09/29
-## Note    : install and config as function
+## version : 2.1
+## date    : 2024/04/25
+## Note    : install and config as function, no replace disk
 ##
-##         : Spare disk have to be renommed using "SPARE-Tx_blablabla"
-##         : Tx is the Tier number
 ##
 
 
@@ -28,16 +26,16 @@
     help [switch]
 .SYNTAX
     Run the script
-        C:\Program files\DataCore\SANSymphony\Auto_Repair_disk_NVMe.ps1
+        C:\Program files\DataCore\SANSymphony\Auto_Repair_Pool.ps1
 
     Install the script as a task
-        C:\Program files\DataCore\SANSymphony\Auto_Repair_disk_NVMe.ps1 -install
+        C:\Program files\DataCore\SANSymphony\Auto_Repair_Pool.ps1 -install
 
     
 .NOTES
-    Author: Gaëtan MARAIS
-    Date:   2020.09.28
-    Version : 2.0
+    Author: Luc BLANC
+    Date:   2024.04.25
+    Version : 2.1
 #>
 
 Param(
@@ -66,7 +64,7 @@ $installPath = $regKey.getValue('InstallPath')
 #Parameters
 ##################################################
 $server = $env:COMPUTERNAME
-$ScriptName = "Auto-Repair-Disk"
+$ScriptName = "Auto-Repair-Pool"
 
 
 $Time2Wait = 1#60*10    #10 minutes
@@ -279,62 +277,13 @@ Purge Action : PRE-REQUISITES NEEDED"
 
 
             # Remove the comment below if you want to delete the failed disk from the inventory
-            # if ($baddisk.alias) { Set-DcsPhysicalDiskProperties -Disk $baddiskid -NewName ""| Out-Null }
+            if ($baddisk.alias) { Set-DcsPhysicalDiskProperties -Disk $baddiskid -NewName ""| Out-Null }
             
             }
 
-        $availabledisk=Get-DcsPhysicalDisk -Available -Server $baddiskserver | sort -Property Size | ? {$_.size -ge $baddisksize -and $_.SectorSize -eq $baddisksector -and $_.caption -like "SPARE-T$baddisktier*"}|Select-Object -first 1
-        $availablediskcaption=($availabledisk.caption).replace("SPARE-T$baddisktier","").TrimStart('_',' ','-')
-
-        if ($availabledisk.count -eq 0) 
-            {
-            $messagelog="No Spare disk available to add into the pool"
-            Write-EventLog -ComputerName $server –LogName Application –Source $eventlogsource –EntryType Error –EventID 12 -Category 0 -Message $messagelog
-            Add-DcsLogMessage -Level error -Message "$ScriptName : $messagelog"
-            }
-        else
-            {
-            try {$newdisk=Add-DcsPoolMember -Pool $baddiskpool -Disk $availabledisk
-                    $messagelog="New disk added into the pool`n--Disk Name : $availabledisk`n--Pool Name : $baddiskpool"}
-            catch {
-                    $ErrorMessage = $_.Exception.Message
-                    $messagelog="Unable to add disk on pool
-                    $ErrorMessage"
-                    Write-EventLog -ComputerName $server –LogName Application –Source $eventlogsource –EntryType Error –EventID 12 -Category 0 -Message $messagelog
-                    Add-DcsLogMessage -Level error -Message "$ScriptName : $messagelog"
-                    exit 12
-                    }
-
-
-
-            try {Set-DcsPoolMemberProperties -PoolMember $newdisk.Id -DiskTier $baddisktier | Out-Null
-            $messagelog+="`n--Tier #    : $baddisktier"}
-            catch {
-                    $ErrorMessage = $_.Exception.Message
-                    $messagelog="Unable to change tier level for the disk
-                    $ErrorMessage"
-                    Write-EventLog -ComputerName $server –LogName Application –Source $eventlogsource –EntryType Error –EventID 12 -Category 0 -Message $messagelog
-                    Add-DcsLogMessage -Level error -Message "$ScriptName : $messagelog"
-                    }
-
-
-
-            try {Set-DcsPhysicalDiskProperties -Disk $newdisk.id -NewName "$availablediskcaption ($baddiskalias)"| Out-Null
-            $messagelog+="`n--Disk renamed to : $availablediskcaption ($baddiskalias)"
-            Write-EventLog -ComputerName $server –LogName Application –Source $eventlogsource –EntryType warning –EventID 1 -Category 0 -Message $messagelog
-            Add-DcsLogMessage -Level Warning -Message "$ScriptName : $messagelog"
-            }
-            catch {
-                    $ErrorMessage = $_.Exception.Message
-                    $messagelog="Unable to rename the disk with $availablediskcaption ($baddiskalias)
-                    $ErrorMessage"
-                    Write-EventLog -ComputerName $server –LogName Application –Source $eventlogsource –EntryType Error –EventID 12 -Category 0 -Message $messagelog
-                    Add-DcsLogMessage -Level error -Message "$ScriptName : $messagelog"
-                    }
-            }
         
 
-}        
+    }        
 
         
     
