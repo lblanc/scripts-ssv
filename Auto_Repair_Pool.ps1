@@ -104,7 +104,7 @@ catch {
     Unable to load Import the DataCore commandelt module - $installPath\DataCore.Executive.Cmdlets.dll
 
     $ErrorMessage"
-    Write-EventLog -ComputerName $server –LogName Application –Source $eventlogsource –EntryType Error –EventID 1 -Category 0 -Message $logmsg
+    Write-EventLog -ComputerName $server -LogName Application Source $eventlogsource -EntryType Error -EventID 1 -Category 0 -Message $logmsg
     exit 100
     }
 
@@ -116,7 +116,7 @@ catch {
     Unable to connect DataCore server over powershell
 
     $ErrorMessage"
-    Write-EventLog -ComputerName $server –LogName Application –Source $eventlogsource –EntryType Error –EventID 2 -Category 0 -Message $logmsg
+    Write-EventLog -ComputerName $server -LogName Application -Source $eventlogsource -EntryType Error -EventID 2 -Category 0 -Message $logmsg
     exit 100
 }
 
@@ -136,7 +136,7 @@ function install-script {
         "
         Write-Host $msglog
         $ErrorMessage = $_.Exception.Message
-        Write-EventLog -ComputerName $server –LogName Application –Source $eventlogsource –EntryType Error –EventID 10 -Category 0 -Message "
+        Write-EventLog -ComputerName $server -LogName Application -Source $eventlogsource -EntryType Error -EventID 10 -Category 0 -Message "
         $msglog
 
         $errorMessage"
@@ -151,7 +151,7 @@ function install-script {
     Add-DcsAction  -Task $ScriptName -Server $server  -FilePath "$installPath\$ScriptName.ps1" -ScriptAction PowerShell | out-null
 
     write-host "$ScriptName task auto created for server $server "
-    Write-EventLog -ComputerName $server –LogName Application –Source $eventlogsource –EntryType Information –EventID 10 -Category 0 -Message "
+    Write-EventLog -ComputerName $server -LogName Application -Source $eventlogsource -EntryType Information -EventID 10 -Category 0 -Message "
         SSY task $ScriptName created successfuly
             installation on server : $server
             script path : $scriptinstallPath
@@ -180,7 +180,7 @@ if ($install) {Install-Script}
 
 
 
-Write-EventLog -ComputerName $server –LogName Application –Source $eventlogsource –EntryType Warning –EventID 10 -Category 0 -Message "Pool Offline - wait for $Time2wait secs."
+Write-EventLog -ComputerName $server -LogName Application -Source $eventlogsource -EntryType Warning -EventID 10 -Category 0 -Message "Pool Offline - wait for $Time2wait secs."
 Add-DcsLogMessage -Level Warning -Message "$ScriptName : Pool Offline - wait for $Time2wait secs."
 
 
@@ -249,12 +249,12 @@ Purge Action : PRE-REQUISITES NEEDED"
                 if ($action -eq 0) {
                     
                     $messagelog+="`n`nNO ACTION REQUIRED"
-                    Write-EventLog -ComputerName $server –LogName Application –Source $eventlogsource –EntryType Warning –EventID 10 -Category 0 -Message $messagelog
+                    Write-EventLog -ComputerName $server -LogName Application -Source $eventlogsource -EntryType Warning -EventID 10 -Category 0 -Message $messagelog
                     Add-DcsLogMessage -Level Warning -Message "$ScriptName : $messagelog"
                     }
                 else {
                     $messagelog+="`n`nACTION(S) ARE REQUIRED, SCRIPT STOP!!!"
-                    Write-EventLog -ComputerName $server –LogName Application –Source $eventlogsource –EntryType Error –EventID 10 -Category 0 -Message $messagelog
+                    Write-EventLog -ComputerName $server -LogName Application -Source $eventlogsource -EntryType Error -EventID 10 -Category 0 -Message $messagelog
                     Add-DcsLogMessage -Level error -Message "$ScriptName : $messagelog"
                     exit 10
                     }
@@ -270,7 +270,7 @@ Purge Action : PRE-REQUISITES NEEDED"
                     $ErrorMessage = $_.Exception.Message
                     $messagelog="Unable to purge failed disk
                     $ErrorMessage"
-                    Write-EventLog -ComputerName $server –LogName Application –Source $eventlogsource –EntryType Error –EventID 10 -Category 0 -Message $messagelog
+                    Write-EventLog -ComputerName $server -LogName Application -Source $eventlogsource -EntryType Error -EventID 10 -Category 0 -Message $messagelog
                     Add-DcsLogMessage -Level error -Message "$ScriptName : $messagelog"
                     exit 10
                     }
@@ -294,7 +294,7 @@ else
         $messagelog="Too many disks failed on pool disk : $diskpoolcaption
         No replace will be operate
         Disk failed : $baddisk"
-        Write-EventLog -ComputerName $server –LogName Application –Source $eventlogsource –EntryType Error –EventID 20 -Category 0 -Message $messagelog
+        Write-EventLog -ComputerName $server -LogName Application -Source $eventlogsource -EntryType Error -EventID 20 -Category 0 -Message $messagelog
         Add-DcsLogMessage -Level error -Message "$ScriptName : $messagelog"
         }
     else {
