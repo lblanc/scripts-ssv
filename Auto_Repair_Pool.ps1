@@ -67,7 +67,7 @@ $server = $env:COMPUTERNAME
 $ScriptName = "Auto-Repair-Pool"
 
 
-$Time2Wait = 1#60*10    #10 minutes
+$Time2Wait = 20#60*10    #10 minutes
 $ForcePurge = 1       #0 Purge will not be executed if dataloss (snap)
 
 $eventlogsource = $scriptname
