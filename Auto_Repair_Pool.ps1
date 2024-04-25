@@ -279,6 +279,10 @@ Purge Action : PRE-REQUISITES NEEDED"
             # Remove the comment below if you want to delete the failed disk from the inventory
             if ($baddisk.alias) { Set-DcsPhysicalDiskProperties -Disk $baddiskid -NewName ""| Out-Null }
             
+
+            Add-DcsLogMessage -Level Error -Message "$scriptname : FAILED Disk Remove - Don't forget to replace failed disk on $server for pool $baddiskpool"
+
+
             }
 
         
